@@ -247,7 +247,9 @@ Meal-Management-System/
 ### 👨‍💻 Developer
 
 **Shakhawat Hosen**
+
 GitHub: [https://github.com/theshakhawathosen](https://github.com/theshakhawathosen)
+
 Website: [shakhawatdev.com](https://shakhawatdev.com)
 
 ### 📚 Framework & Tools
