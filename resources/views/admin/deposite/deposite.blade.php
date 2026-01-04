@@ -1,0 +1,133 @@
+@extends('layout.admin-layout')
+@section('title', 'Deposite')
+@section('content')
+    <section class="section">
+        <div class="container-fluid">
+            <div class="row mt-5">
+                <div class="col-lg-12">
+                    <div class="card-style settings-card-1 mb-30">
+                        <div class="title mb-30 d-flex justify-content-between align-items-center">
+                            <h4>All Deposite</h4>
+                            <div>
+                                <a href="{{ route('admin.Createdeposite') }}" class="btn py-2 p-3 btn-sm btn-primary"><i class="lni lni-plus"></i></a>
+                                <a href="{{ route('admin.pendingDeposite') }}" class="btn py-2 p-3 btn-sm btn-danger "><i class="lni lni-hourglass"></i></a>
+                                <a href="{{ route('admin.exportDeposite') }}" class="btn py-2 p-3 btn-sm btn-success"><i class="lni lni-printer"></i></a>
+                            </div>
+                        </div>
+                        <div class="table-wrapper table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="lead-info">
+                                            <h6>Member</h6>
+                                        </th>
+                                        <th class="lead-email">
+                                            <h6>Amount</h6>
+                                        </th>
+                                        <th class="lead-phone">
+                                            <h6>Date</h6>
+                                        </th>
+                                        <th>
+                                            <h6>Action</h6>
+                                        </th>
+                                    </tr>
+                                    <!-- end table row-->
+                                </thead>
+                                <tbody>
+                                    @foreach ($deposites as $deposite)
+                                        <tr id="trrow{{ $deposite->id }}">
+                                            <td class="min-width">
+                                                <div class="lead">
+                                                    <div class="lead-image">
+                                                        <img src="{{ $deposite->user->photo }}"
+                                                            alt="{{ $deposite->user->name }}">
+                                                    </div>
+                                                    <div class="lead-text">
+                                                        <p>{{ $deposite->user->name }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="min-width">
+                                                <p><a href="#0">{{ $deposite->amount }}</a></p>
+                                            </td>
+                                            <td class="min-width">
+                                                <p>{{ $deposite->date }}</p>
+                                            </td>
+                                            <td>
+                                                <div class="action">
+                                                    <button class="text-danger"
+                                                        onclick="deleteDeposite({{ $deposite->id }})">
+                                                        <i class="lni lni-trash-can"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                            <!-- end table -->
+                        </div>
+                        <div class="row">
+                            {{ $deposites->links('pagination::bootstrap-5') }}
+                        </div>
+                    </div>
+                    <!-- end card -->
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </section>
+@endsection
+@push('admin_js')
+    <script>
+        function deleteDeposite(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Send AJAX request to delete the deposit
+                    $.ajax({
+                        url: "{{ route('admin.deleteDeposite') }}",
+                        type: 'post',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            id: id,
+                        },
+                        success: function(response) {
+                            if (response.success == true) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    response.msg,
+                                    'success'
+                                );
+                                $("#trrow" + id).hide(500);
+                            } else {
+                                Swal.fire(
+                                    'Error!',
+                                    'There was a problem deleting the deposit.',
+                                    'error'
+                                );
+                            }
+                        },
+                        error: function() {
+                            Swal.fire(
+                                'Error!',
+                                'There was a problem deleting the deposit.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+@endpush
